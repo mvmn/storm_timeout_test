@@ -32,12 +32,18 @@ public class StormTopologyBuilder {
 		config.setDebug(Boolean.valueOf(strProp("topology.debug", "true", argsAsMap)));
 
 		config.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, intProp("topology.timeout", "30", argsAsMap));
+		if (argsAsMap.containsKey("topology.max.spout.pending")) {
+			config.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, intProp("topology.max.spout.pending", "65535", argsAsMap));
+		}
 
 		config.put(Config.NIMBUS_TASK_TIMEOUT_SECS, intProp("topology.task.timeout", "30", argsAsMap));
 		config.put(Config.NIMBUS_SUPERVISOR_TIMEOUT_SECS, intProp("topology.supervisor.timeout", "60", argsAsMap));
 
 		config.put(Config.SUPERVISOR_WORKER_START_TIMEOUT_SECS, intProp("topology.worker.start.timeout", "120", argsAsMap));
 		config.put(Config.SUPERVISOR_WORKER_TIMEOUT_SECS, intProp("topology.worker.timeout", "30", argsAsMap));
+
+		config.put(Config.TOPOLOGY_DISRUPTOR_BATCH_TIMEOUT_MILLIS, intProp("topology.disruptor.batch.timeout", "1", argsAsMap));
+		config.put(Config.TOPOLOGY_DISRUPTOR_WAIT_TIMEOUT_MILLIS, intProp("topology.disruptor.wait.timeout", "1000", argsAsMap));
 
 		config.put(Config.TOPOLOGY_TRANSFER_BUFFER_SIZE, intProp("topology.buffer.transfer", "1024", argsAsMap));
 		config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, intProp("topology.buffer.receive", "1024", argsAsMap));
