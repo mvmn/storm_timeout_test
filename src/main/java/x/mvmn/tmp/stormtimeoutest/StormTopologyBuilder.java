@@ -33,7 +33,7 @@ public class StormTopologyBuilder {
 
 		config.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, intProp("topology.timeout", "30", argsAsMap));
 		if (argsAsMap.containsKey("topology.max.spout.pending")) {
-			config.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, intProp("topology.max.spout.pending", "65535", argsAsMap));
+			config.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, intProp("topology.max.spout.pending", "65536", argsAsMap));
 		}
 
 		config.put(Config.NIMBUS_TASK_TIMEOUT_SECS, intProp("topology.task.timeout", "30", argsAsMap));
@@ -49,7 +49,7 @@ public class StormTopologyBuilder {
 		config.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, intProp("topology.buffer.receive", "1024", argsAsMap));
 		config.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE, intProp("topology.buffer.send", "1024", argsAsMap));
 
-		config.put("xmvmn.slowBoltWaitTime", "10000");
+		config.put("xmvmn.slowBoltWaitTime", strProp("xmvmn.slowBoltWaitTime", "10000", argsAsMap));
 
 		TopologyBuilder topologyBuilder = new TopologyBuilder();
 
@@ -57,11 +57,12 @@ public class StormTopologyBuilder {
 				strProp("kafka.topic", "stormTimeoutsTestTopic", argsAsMap), strProp("zk.root", "", argsAsMap),
 				strProp("kafka.spout.id", "testKafkaSpout", argsAsMap));
 
-		topologyBuilder.setSpout("kafkaSpout", new KafkaSpout(spoutConfig), intProp("kafka.spout.ph", "5", argsAsMap));
-		topologyBuilder.setBolt("fastBolt", new FastBolt(), intProp("bolt.fast.ph", "4", argsAsMap)).setNumTasks(intProp("bolt.fast.tasks", "4", argsAsMap))
+		topologyBuilder.setSpout("kafkaSpout", new KafkaSpout(spoutConfig), intProp("kafka.spout.ph", "5", argsAsMap))
+				.setNumTasks(intProp("spout.tasks", "1", argsAsMap));
+		topologyBuilder.setBolt("fastBolt", new FastBolt(), intProp("bolt.fast.ph", "4", argsAsMap)).setNumTasks(intProp("bolt.fast.tasks", "1", argsAsMap))
 				.shuffleGrouping("kafkaSpout");
-		topologyBuilder.setBolt("slowBolt", new SlowBolt(), intProp("bolt.slow.ph", "16", argsAsMap)).setNumTasks(intProp("bolt.slow.tasks", "16", argsAsMap))
-				.shuffleGrouping("kafkaSpout");
+		topologyBuilder.setBolt("slowBolt", new SlowBolt(), intProp("bolt.slow.ph", "16", argsAsMap)).setNumTasks(intProp("bolt.slow.tasks", "1", argsAsMap))
+				.shuffleGrouping("fastBolt");
 
 		if (Boolean.valueOf(System.getProperty("localStormCluster", "false"))) {
 			new LocalCluster().submitTopology(topologyName, config, topologyBuilder.createTopology());
