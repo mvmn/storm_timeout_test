@@ -58,9 +58,9 @@ public class StormTopologyBuilder {
 				strProp("kafka.spout.id", "testKafkaSpout", argsAsMap));
 
 		topologyBuilder.setSpout("kafkaSpout", new KafkaSpout(spoutConfig), intProp("kafka.spout.ph", "5", argsAsMap));
-		topologyBuilder.setBolt("fastBolt", new FastBolt(), intProp("bolt.fast.ph", "10", argsAsMap)).setNumTasks(intProp("bolt.fast.tasks", "20", argsAsMap))
+		topologyBuilder.setBolt("fastBolt", new FastBolt(), intProp("bolt.fast.ph", "4", argsAsMap)).setNumTasks(intProp("bolt.fast.tasks", "4", argsAsMap))
 				.shuffleGrouping("kafkaSpout");
-		topologyBuilder.setBolt("slowBolt", new SlowBolt(), intProp("bolt.slow.ph", "100", argsAsMap)).setNumTasks(intProp("bolt.slow.tasks", "200", argsAsMap))
+		topologyBuilder.setBolt("slowBolt", new SlowBolt(), intProp("bolt.slow.ph", "16", argsAsMap)).setNumTasks(intProp("bolt.slow.tasks", "16", argsAsMap))
 				.shuffleGrouping("kafkaSpout");
 
 		if (Boolean.valueOf(System.getProperty("localStormCluster", "false"))) {
