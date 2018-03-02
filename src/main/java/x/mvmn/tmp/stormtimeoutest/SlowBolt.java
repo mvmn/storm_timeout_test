@@ -1,6 +1,5 @@
 package x.mvmn.tmp.stormtimeoutest;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.apache.storm.task.OutputCollector;
@@ -27,7 +26,7 @@ public class SlowBolt extends BaseRichBolt {
 
 	@Override
 	public void execute(Tuple tuple) {
-		String payload = new String(tuple.getBinary(0), StandardCharsets.UTF_8);
+		String payload = tuple.getString(0);
 		System.out.println("Slow bolt called with tuple: " + tuple + " / " + payload);
 		try {
 			int waitTime = 10000;
